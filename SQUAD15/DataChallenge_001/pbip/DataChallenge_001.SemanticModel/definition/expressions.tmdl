@@ -1,0 +1,143 @@
+expression PARAM_XLSX_FILE = "C:\Users\Marcos Soares\Documents\GitHub\Personal\XPERIUN\SQUAD15\DataChallenge_001\db\bases_modulo_produtivo.xlsx" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 8005f34b-6e26-47ac-bd8b-6723a2f16171
+	queryGroup: Param
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression PadronizarTabela = ```
+		// Função auxiliar para padronizar o tratamento das tabelas
+		(tabela as table) as table =>
+		    let
+		        // Remove linhas completamente vazias
+		        RemoverVazias = Table.SelectRows(tabela, each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+		
+		        // Promove cabeçalhos se necessário
+		        VerificarCabecalho = if Table.ColumnNames(RemoverVazias){0} = "Column1" then
+		            Table.PromoteHeaders(RemoverVazias, [PromoteAllScalars=true]) 
+		        else 
+		            RemoverVazias,
+		
+		        // Remove linhas de cabeçalho duplicadas ou instruções
+		        RemoverMetadados = Table.SelectRows(
+		            VerificarCabecalho, 
+		            each not Text.Contains(Text.Lower(Text.Combine(List.Transform(Record.FieldValues(_), each if _ = null then "" else Text.From(_)), "")), "tipo") 
+		              and not Text.Contains(Text.Lower(Text.Combine(List.Transform(Record.FieldValues(_), each if _ = null then "" else Text.From(_)), "")), "descrição")
+		        ),
+		
+		        // Lista de nomes de colunas sem acento
+		        ColunasSemAcento = List.Transform(
+		            Table.ColumnNames(RemoverMetadados),
+		            RemoverAcento
+		        ),
+		
+		        // Renomeando as colunas
+		        TabelaComCabecalhoSemAcento = Table.RenameColumns(
+		            RemoverMetadados,
+		            List.Zip({Table.ColumnNames(RemoverMetadados), ColunasSemAcento})
+		        )        
+		    in
+		        TabelaComCabecalhoSemAcento
+		```
+	lineageTag: f4a2e40d-9548-4f0b-b55e-83d48635c7a5
+	queryGroup: Function
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression RemoverAcento =
+		(texto as nullable text)=>
+		let
+		    Binario = Text.ToBinary(texto, 1251),
+		    SemAcento = Text.FromBinary(Binario, TextEncoding.Utf8)
+		in
+		    SemAcento
+	lineageTag: c56167ff-b1cb-474d-8790-e62403056637
+	queryGroup: Function
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression Fluxo_Processo_ =
+		let
+		    Source = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+		    Fluxo_Processo_Sheet = Source{[Item="Fluxo_Processo",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Fluxo_Processo_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ID_Fluxo", type text}, {"ID_Pedido", type text}, {"ID_Setor", Int64.Type}, {"ID_Funcionario", Int64.Type}, {"Turno", Int64.Type}, {"Data_Entrada_Setor", type number}, {"Data_Saida_Setor", type number}, {"Tempo_Padrao", Int64.Type}, {"Tempo_Real", Int64.Type}, {"Retrabalho", Int64.Type}, {"Ocorrencia_Eventual", type text}, {"Status", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: b4834f32-2705-49b2-b005-d4e61c4a9150
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Funcionarios_ =
+		let
+		    Source = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+		    Funcionarios_Sheet = Source{[Item="Funcionarios",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Funcionarios_Sheet, [PromoteAllScalars=true]),
+		
+		    // Lista de nomes de colunas sem acento
+		    ColunasSemAcento = List.Transform(
+		        Table.ColumnNames(#"Promoted Headers"),
+		        RemoverAcento
+		    ),
+		
+		    // Renomeando as colunas
+		    TabelaComCabecalhoSemAcento = Table.RenameColumns(
+		        #"Promoted Headers",
+		        List.Zip({Table.ColumnNames(#"Promoted Headers"), ColunasSemAcento})
+		    )
+		in
+		    TabelaComCabecalhoSemAcento
+	lineageTag: 96cba733-caf9-492c-8df9-184bca24068a
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Materiais_ =
+		let
+		    Source = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+		    Materiais_Sheet = Source{[Item="Materiais",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Materiais_Sheet, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 3c618ac5-74a2-49c4-9da8-389be5009213
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Pedidos_ =
+		let
+		    Source = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+		    Pedidos_Sheet = Source{[Item="Pedidos",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Pedidos_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ID_Pedido", type text}, {"ID_Cliente", Int64.Type}, {"Data_Entrada", type number}, {"Tipo_Pedido", type text}, {"ID_Material", Int64.Type}, {"Peso_KG", type number}, {"Complexidade_Peca", Int64.Type}, {"Prioridade_Interna", Int64.Type}, {"SLA", type text}, {"Status_Atual", type text}, {"Prazo_Cliente", type number}, {"Data_Conclusao", type number}, {"Valor_Final", Int64.Type}, {"Lucro_Prejuizo", type number}, {"Status_Financeiro", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: d554ed5b-dcda-4b94-8a53-67b8913947a6
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Setores_ =
+		let
+		    Source = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+		    Setores_Sheet = Source{[Item="Setores",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Setores_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ID_Setor", Int64.Type}, {"Nome_Setor", type text}, {"Responsavel", type text}, {"Tempo_Padrao_Processamento", Int64.Type}, {"Capacidade_Diaria", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 8768879b-a60a-44ba-8dfd-7d59f58a7cc6
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

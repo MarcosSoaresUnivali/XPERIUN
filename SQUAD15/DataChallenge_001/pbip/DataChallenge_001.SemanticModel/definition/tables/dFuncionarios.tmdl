@@ -1,0 +1,155 @@
+table dFuncionarios
+	lineageTag: 027e493f-128a-4f0e-a1ca-8b01990ad7a5
+
+	column ID_Funcionario
+		dataType: int64
+		formatString: 0
+		lineageTag: a0eea98b-a90b-427e-8338-080bebfadf29
+		summarizeBy: none
+		sourceColumn: ID_Funcionario
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nome
+		dataType: string
+		lineageTag: 7e8490be-c51b-494c-9944-2f0bfc193f15
+		summarizeBy: none
+		sourceColumn: Nome
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Setor
+		dataType: int64
+		formatString: 0
+		lineageTag: d64e0a38-ae22-4a86-9564-7e0d57a6cc26
+		summarizeBy: none
+		sourceColumn: ID_Setor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cargo
+		dataType: string
+		lineageTag: 68eb609d-4163-43a9-877c-4d6b6da2e9a6
+		summarizeBy: none
+		sourceColumn: Cargo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Turno
+		dataType: int64
+		formatString: 0
+		lineageTag: 35d0c33a-f32d-4344-89a2-2aa5b4b54687
+		summarizeBy: none
+		sourceColumn: Turno
+
+		annotation SummarizationSetBy = Automatic
+
+	column Salario_Mensal
+		dataType: double
+		lineageTag: 722e34ac-0941-4c5d-a9ef-e8c9ea59a9c8
+		summarizeBy: none
+		sourceColumn: Salario_Mensal
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Custo_Hora
+		dataType: double
+		lineageTag: 2c5cddb7-0efe-4974-b077-0630d85a476d
+		summarizeBy: none
+		sourceColumn: Custo_Hora
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Horas_Mensais_Disponiveis
+		dataType: int64
+		formatString: 0
+		lineageTag: 6e93e52e-c15a-44fd-ba9a-5a29030f00ed
+		summarizeBy: none
+		sourceColumn: Horas_Mensais_Disponiveis
+
+		annotation SummarizationSetBy = Automatic
+
+	column Eficiencia_Tecnica
+		dataType: double
+		lineageTag: 4b583420-8e15-4417-99fd-08e5fcb32e6b
+		summarizeBy: none
+		sourceColumn: Eficiencia_Tecnica
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Horas_Produtivas_Mes
+		dataType: double
+		lineageTag: 82e45641-054e-4b99-a3e4-210e8c2f56b0
+		summarizeBy: none
+		sourceColumn: Horas_Produtivas_Mes
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Horas_Produtivas_Dia
+		dataType: double
+		lineageTag: ddbe0afc-8e76-462d-93e8-85c9f01dc200
+		summarizeBy: none
+		sourceColumn: Horas_Produtivas_Dia
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Setor
+		dataType: string
+		lineageTag: 3841a1cc-851a-4ed9-a377-f710f3ea6dc9
+		summarizeBy: none
+		sourceColumn: Setor
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dFuncionarios = m
+		mode: import
+		queryGroup: Dim
+		source = ```
+				// 1.3 Importação da tabela FUNCIONARIOS
+				let
+				    Origem = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+				    tblFuncionarios = if List.Contains(Origem[Name], "Funcionarios") then 
+				                         Origem{[Item="Funcionarios",Kind="Sheet"]}[Data]
+				                     else if List.Contains(Origem[Name], "tblFuncionarios") then
+				                         Origem{[Item="tblFuncionarios",Kind="Table"]}[Data]
+				                     else
+				                         Origem{[Item="Sheet3",Kind="Sheet"]}[Data],
+				    CabecalhosPromovidos = PadronizarTabela(tblFuncionarios),
+				    TiposAlterados = Table.TransformColumnTypes(CabecalhosPromovidos,{
+				        {"ID_Funcionario", Int64.Type},
+				        {"Nome", type text},
+				        {"ID_Setor", Int64.Type},
+				        {"Setor", type text},
+				        {"Cargo", type text},
+				        {"Turno", Int64.Type},
+				        {"Salario_Mensal", type number},
+				        {"Custo_Hora", type number},
+				        {"Horas_Mensais_Disponiveis", Int64.Type},
+				        {"Eficiencia_Tecnica", type number},
+				        {"Horas_Produtivas_Mes", type number},
+				        {"Horas_Produtivas_Dia", type number}
+				    }),
+				    // Garantir consistência entre ID_Setor e Setor
+				    EnsureSetorConsistency = Table.AddColumn(TiposAlterados, "Setor_Fixed", each [Setor]),
+				    RemoveSetor = Table.RemoveColumns(EnsureSetorConsistency, {"Setor"}),
+				    RenameSetorFixed = Table.RenameColumns(RemoveSetor, {{"Setor_Fixed", "Setor"}}),
+				    // Remover duplicatas baseado na chave primária
+				    RemoverDuplicatas = Table.Distinct(RenameSetorFixed, {"ID_Funcionario"})
+				in
+				    RemoverDuplicatas
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,118 @@
+table dCalendario
+	lineageTag: 3221ab25-56d9-4a12-a6cd-8bf344ea55c9
+	dataCategory: Time
+
+	column Data
+		dataType: dateTime
+		isKey
+		formatString: Long Date
+		lineageTag: 9d1f20d2-a3f9-416c-b9c5-87253962978a
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: e89b4e65-ad3b-448a-9ebf-a3210cedfd91
+		summarizeBy: sum
+		sourceColumn: Ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mes Num'
+		dataType: int64
+		formatString: 0
+		lineageTag: d1238efa-0134-4a15-8f73-da99a7f1e308
+		summarizeBy: sum
+		sourceColumn: Mes Num
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nome Mes'
+		dataType: string
+		lineageTag: 437ac2f6-b5cb-4200-9310-e915935e188b
+		summarizeBy: none
+		sourceColumn: Nome Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Dia do Mes'
+		dataType: int64
+		formatString: 0
+		lineageTag: dbc7387f-3da4-44cf-b20a-6f4b25cc72ae
+		summarizeBy: sum
+		sourceColumn: Dia do Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Dia da Semana Num'
+		dataType: int64
+		formatString: 0
+		lineageTag: ceb4823b-41d8-47f6-b9e5-f3d2039057e3
+		summarizeBy: sum
+		sourceColumn: Dia da Semana Num
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Dia da Semana'
+		dataType: string
+		lineageTag: b018ca1a-e0ce-438d-9867-d59e03a90e9f
+		summarizeBy: none
+		sourceColumn: Dia da Semana
+
+		annotation SummarizationSetBy = Automatic
+
+	column Trimestre
+		dataType: string
+		lineageTag: 694d8136-852f-4c40-9379-2696cb526c95
+		summarizeBy: none
+		sourceColumn: Trimestre
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ano-Mes
+		dataType: string
+		lineageTag: b9c06b64-e67f-4355-b8bb-aba9f91059ce
+		summarizeBy: none
+		sourceColumn: Ano-Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCalendario = m
+		mode: import
+		queryGroup: Dim
+		source = ```
+				// 2.1 Tabela de Calendário
+				let
+				    // Definir intervalo de datas com base nos pedidos
+				    DataInicial = List.Min(fPedidos[Data_Entrada]),
+				    DataFinal = Date.AddDays(DateTime.Date(DateTime.LocalNow()), 365),
+				    
+				    // Criar sequência de datas
+				    Fonte = List.Dates(DateTime.Date(DataInicial), Duration.Days(DataFinal - DateTime.Date(DataInicial)) + 1, #duration(1,0,0,0)),
+				    #"Convertido para Tabela" = Table.FromList(Fonte, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Convertido para Tabela",{{"Column1", "Data"}}),
+				    
+				    // Adicionar colunas de calendário úteis
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Colunas Renomeadas",{{"Data", type date}}),
+				    #"Personalizado Adicionado" = Table.AddColumn(#"Tipo Alterado", "Ano", each Date.Year([Data])),
+				    #"Personalizado Adicionado1" = Table.AddColumn(#"Personalizado Adicionado", "Mes Num", each Date.Month([Data])),
+				    #"Personalizado Adicionado2" = Table.AddColumn(#"Personalizado Adicionado1", "Nome Mes", each Date.MonthName([Data])),
+				    #"Personalizado Adicionado3" = Table.AddColumn(#"Personalizado Adicionado2", "Dia do Mes", each Date.Day([Data])),
+				    #"Personalizado Adicionado4" = Table.AddColumn(#"Personalizado Adicionado3", "Dia da Semana Num", each Date.DayOfWeek([Data]) + 1),
+				    #"Personalizado Adicionado5" = Table.AddColumn(#"Personalizado Adicionado4", "Dia da Semana", each Date.DayOfWeekName([Data])),
+				    #"Personalizado Adicionado6" = Table.AddColumn(#"Personalizado Adicionado5", "Trimestre", each "T" & Text.From(Date.QuarterOfYear([Data]))),
+				    #"Personalizado Adicionado7" = Table.AddColumn(#"Personalizado Adicionado6", "Ano-Mes", each Text.From(Date.Year([Data])) & "-" & Text.PadStart(Text.From(Date.Month([Data])), 2, "0")),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Personalizado Adicionado7",{{"Ano", Int64.Type}, {"Mes Num", Int64.Type}, {"Dia do Mes", Int64.Type}, {"Dia da Semana Num", Int64.Type}, {"Ano-Mes", type text}, {"Nome Mes", type text}, {"Dia da Semana", type text}, {"Trimestre", type text}})
+				in
+				    #"Tipo Alterado1"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

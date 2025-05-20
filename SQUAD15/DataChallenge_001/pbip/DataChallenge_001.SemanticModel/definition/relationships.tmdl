@@ -1,0 +1,55 @@
+relationship 06175881-f3fc-4773-a6ac-ee5694fe1bc6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fPedidos.Data_Entrada
+	toColumn: LocalDateTable_e9a6cd29-0082-443d-b846-670bbc8614b5.Date
+
+relationship 32f3aa32-4be6-4d21-acf7-4b5b508b2129
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fPedidos.Prazo_Cliente
+	toColumn: LocalDateTable_3a67b100-4e75-4963-8085-18e42123f72e.Date
+
+relationship e5e13a74-1461-4ac9-b248-94e2918cc327
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fPedidos.Data_Conclusao
+	toColumn: LocalDateTable_9b834bdd-b690-423e-b96b-f30200fde2d6.Date
+
+relationship AutoDetected_02699f26-6aa7-4ceb-9333-642979729778
+	fromColumn: fPedidos.ID_Cliente
+	toColumn: dClientes.ID_Cliente
+
+relationship AutoDetected_2052f242-b77a-4245-988c-187142949a3a
+	fromColumn: fPedidos.ID_Material
+	toColumn: dMateriais.ID_Material
+
+relationship dbe3327e-bf36-4c09-b4b2-d072aa69b465
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fFluxoProcesso.Data_Entrada_Setor
+	toColumn: LocalDateTable_498940c6-71a3-4085-b379-cb0c8e565334.Date
+
+relationship AutoDetected_004d6950-c50c-4cdc-bc7b-58d7173e6c56
+	fromColumn: fFluxoProcesso.ID_Funcionario
+	toColumn: dFuncionarios.ID_Funcionario
+
+relationship AutoDetected_592e65fc-2b5c-4789-8aea-182d7a06fe61
+	fromColumn: fFluxoProcesso.ID_Setor
+	toColumn: dSetores.ID_Setor
+
+relationship 5453877f-243d-482c-bcb3-22ea38276627
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fLeadtime.Data_Inicio
+	toColumn: LocalDateTable_63228817-95a5-49fe-b5a7-9ad94c39f177.Date
+
+relationship 06757bb0-4e11-4a0b-b783-5de627f5a769
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fLeadtime.Data_Fim
+	toColumn: LocalDateTable_07c2b345-415e-488c-b318-105bc2f87baa.Date
+
+relationship c8632557-32a2-401d-b504-6b041e5ea03c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fLeadtime.Prazo_Cliente
+	toColumn: LocalDateTable_e160aedd-9af6-4e6e-b6cd-85f1415059ec.Date
+
+relationship AutoDetected_9d3b5684-d671-4c03-943c-91d87bfb8c9d
+	fromColumn: fLeadtime.ID_Cliente
+	toColumn: dClientes.ID_Cliente
+

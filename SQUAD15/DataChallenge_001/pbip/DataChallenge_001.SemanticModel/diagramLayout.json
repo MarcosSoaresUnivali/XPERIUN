@@ -1,0 +1,139 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 597.85517213455842,
+            "y": 641.82000435590544
+          },
+          "nodeIndex": "dClientes",
+          "nodeLineageTag": "7afdbbc4-ce04-4a92-b6d0-589154fcf467",
+          "size": {
+            "height": 203.9080431889422,
+            "width": 168.6179792975729
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 23.448259133653593
+          },
+          "nodeIndex": "dFuncionarios",
+          "nodeLineageTag": "027e493f-128a-4f0e-a1ca-8b01990ad7a5",
+          "size": {
+            "height": 385.9769501567298,
+            "width": 204.45804302283983
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 336.08550376393913,
+            "y": 327.68667515889348
+          },
+          "nodeIndex": "fPedidos",
+          "nodeLineageTag": "c699d5dd-01ec-4d93-8d5c-1dd1816fb13d",
+          "size": {
+            "height": 521.45578070672832,
+            "width": 189.68706453425978
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 668.14485038460407
+          },
+          "nodeIndex": "dMateriais",
+          "nodeLineageTag": "f70e2f06-1fbc-4bb4-876c-ccc0e6962644",
+          "size": {
+            "height": 224,
+            "width": 213.6899045782024
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 433.84432001399034
+          },
+          "nodeIndex": "dSetores",
+          "nodeLineageTag": "2e0a4839-d87f-4881-9d74-8c48ede63d07",
+          "size": {
+            "height": 210.42144850384602,
+            "width": 219.22902151141989
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 980.04907043392143,
+            "y": 0
+          },
+          "nodeIndex": "dCalendario",
+          "nodeLineageTag": "3221ab25-56d9-4a12-a6cd-8bf344ea55c9",
+          "size": {
+            "height": 310.32949169278828,
+            "width": 231.48595266414122
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 544.10963221673126,
+            "y": 0
+          },
+          "nodeIndex": "fFluxoProcesso",
+          "nodeLineageTag": "dc41973c-1d4b-49f7-a6f8-f293283ae35a",
+          "size": {
+            "height": 444.59759799086379,
+            "width": 193.49290327090205
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 980.86710659869163,
+            "y": 333.48635212307329
+          },
+          "nodeIndex": "fProdutividadeSetor",
+          "nodeLineageTag": "7b0b3d95-8568-4ff5-865d-1836fafd775f",
+          "size": {
+            "height": 370.34477740096077,
+            "width": 230.3072553778552
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 777.74433248721721,
+            "y": 146.449753194593
+          },
+          "nodeIndex": "fLeadtime",
+          "nodeLineageTag": "e4108f24-bd95-489e-91ed-c5c7f415f082",
+          "size": {
+            "height": 443.29491692788304,
+            "width": 169.60315734145672
+          },
+          "zIndex": 7
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 84.8250605157008,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

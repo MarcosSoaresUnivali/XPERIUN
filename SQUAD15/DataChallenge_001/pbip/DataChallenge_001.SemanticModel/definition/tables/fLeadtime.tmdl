@@ -1,0 +1,179 @@
+table fLeadtime
+	lineageTag: e4108f24-bd95-489e-91ed-c5c7f415f082
+
+	column ID_Pedido
+		dataType: string
+		lineageTag: 599d87df-9356-4876-85ee-41f542596bed
+		summarizeBy: none
+		sourceColumn: ID_Pedido
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Inicio
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 1bdd85da-c035-4c89-ab1a-53f7b508052d
+		summarizeBy: none
+		sourceColumn: Data_Inicio
+
+		variation Variation
+			isDefault
+			relationship: 5453877f-243d-482c-bcb3-22ea38276627
+			defaultHierarchy: LocalDateTable_63228817-95a5-49fe-b5a7-9ad94c39f177.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Fim
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7f16f457-4044-4cab-809a-57f2b78f40ca
+		summarizeBy: none
+		sourceColumn: Data_Fim
+
+		variation Variation
+			isDefault
+			relationship: 06757bb0-4e11-4a0b-b783-5de627f5a769
+			defaultHierarchy: LocalDateTable_07c2b345-415e-488c-b318-105bc2f87baa.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Total_Setores
+		dataType: double
+		lineageTag: 866a8edb-4120-4193-8634-e952613aa814
+		summarizeBy: sum
+		sourceColumn: Total_Setores
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Total_Retrabalhos
+		dataType: double
+		lineageTag: 889e8652-5a26-4c6d-a6ee-0c1668bba0bb
+		summarizeBy: sum
+		sourceColumn: Total_Retrabalhos
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Lead_Time_Dias
+		dataType: string
+		lineageTag: 31151c72-129d-403f-9b09-c135ba8f7348
+		summarizeBy: none
+		sourceColumn: Lead_Time_Dias
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Cliente
+		dataType: int64
+		formatString: 0
+		lineageTag: d79b8d17-dde1-45c8-af4b-1a625e5d4781
+		summarizeBy: none
+		sourceColumn: ID_Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo_Pedido
+		dataType: string
+		lineageTag: 16b6897b-45e6-4d85-9d1e-66181144482b
+		summarizeBy: none
+		sourceColumn: Tipo_Pedido
+
+		annotation SummarizationSetBy = Automatic
+
+	column Complexidade_Peca
+		dataType: int64
+		formatString: 0
+		lineageTag: 42bae504-e2a0-44c9-bce7-efcb7711bf2d
+		summarizeBy: sum
+		sourceColumn: Complexidade_Peca
+
+		annotation SummarizationSetBy = Automatic
+
+	column SLA
+		dataType: string
+		lineageTag: 100751b5-0b5d-42df-8b26-1c67a8b6b40c
+		summarizeBy: none
+		sourceColumn: SLA
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status_Atual
+		dataType: string
+		lineageTag: 34268433-8c57-4190-9815-757fcb3e0bd6
+		summarizeBy: none
+		sourceColumn: Status_Atual
+
+		annotation SummarizationSetBy = Automatic
+
+	column Prazo_Cliente
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: c6e471f5-184e-4891-b536-34fe37c02a5d
+		summarizeBy: none
+		sourceColumn: Prazo_Cliente
+
+		variation Variation
+			isDefault
+			relationship: c8632557-32a2-401d-b504-6b041e5ea03c
+			defaultHierarchy: LocalDateTable_e160aedd-9af6-4e6e-b6cd-85f1415059ec.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cumpriu_Prazo
+		dataType: string
+		lineageTag: 7fcc5f22-756d-4a95-8b05-ed72ab519cd0
+		summarizeBy: none
+		sourceColumn: Cumpriu_Prazo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dias_Diferenca
+		dataType: int64
+		formatString: 0
+		lineageTag: 3622b156-e4a5-4db9-bd7e-70079195c315
+		summarizeBy: sum
+		sourceColumn: Dias_Diferenca
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fLeadtime = m
+		mode: import
+		queryGroup: Fat
+		source = ```
+				// 2.3 Tabela para Análise de Lead Time por Pedido
+				let
+				    // Agrupar fluxo por pedido para calcular lead time
+				    AgruparPorPedido = Table.Group(fFluxoProcesso, {"ID_Pedido"}, {
+				        {"Data_Inicio", each List.Min([Data_Entrada_Setor]), type datetime},
+				        {"Data_Fim", each List.Max([Data_Saida_Setor]), type datetime},
+				        {"Total_Setores", each List.Count(List.Distinct([ID_Setor])), type number},
+				        {"Total_Retrabalhos", each List.Sum([Retrabalho]), type number}
+				    }),
+				    
+				    // Calcular lead time
+				    CalcularLeadTime = Table.AddColumn(AgruparPorPedido, "Lead_Time_Dias", each 
+				        if [Data_Fim] = null then null else Duration.Days([Data_Fim] - [Data_Inicio])),
+				    
+				    // Juntar com tabela de pedidos para análise completa
+				    JuntarComPedidos = Table.NestedJoin(CalcularLeadTime, {"ID_Pedido"}, fPedidos, {"ID_Pedido"}, "Detalhes_Pedido", JoinKind.LeftOuter),
+				    ExpandirDetalhesPedido = Table.ExpandTableColumn(JuntarComPedidos, "Detalhes_Pedido", {"ID_Cliente", "Tipo_Pedido", "Complexidade_Peca", "SLA", "Status_Atual", "Prazo_Cliente"}, {"ID_Cliente", "Tipo_Pedido", "Complexidade_Peca", "SLA", "Status_Atual", "Prazo_Cliente"}),
+				    
+				    // Adicionar indicador de cumprimento de prazo
+				    IndicadorPrazo = Table.AddColumn(ExpandirDetalhesPedido, "Cumpriu_Prazo", each 
+				        if [Data_Fim] = null then "Em Processamento" else 
+				            if [Data_Fim] <= [Prazo_Cliente] then "Sim" else "Não"),
+				    
+				    // Calcular dias de atraso/adiantamento
+				    DiasAtrasoAdiantamento = Table.AddColumn(IndicadorPrazo, "Dias_Diferenca", each 
+				        if [Data_Fim] = null or [Prazo_Cliente] = null then null else Duration.Days([Prazo_Cliente] - [Data_Fim])),
+				    #"Changed Type" = Table.TransformColumnTypes(DiasAtrasoAdiantamento,{{"Cumpriu_Prazo", type text}, {"Dias_Diferenca", Int64.Type}})
+				in
+				    #"Changed Type"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

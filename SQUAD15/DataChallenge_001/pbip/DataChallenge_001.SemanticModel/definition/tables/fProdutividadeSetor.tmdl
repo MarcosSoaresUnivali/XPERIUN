@@ -1,0 +1,147 @@
+table fProdutividadeSetor
+	lineageTag: 7b0b3d95-8568-4ff5-865d-1836fafd775f
+
+	column ID_Setor
+		dataType: int64
+		formatString: 0
+		lineageTag: 3303ade3-46bc-4f10-a5f8-af12fb085dfb
+		summarizeBy: sum
+		sourceColumn: ID_Setor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Total_Processos
+		dataType: double
+		lineageTag: 29f9df05-52a5-4340-b34c-6c2671d0ffc6
+		summarizeBy: sum
+		sourceColumn: Total_Processos
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Media_Tempo_Real
+		dataType: double
+		lineageTag: 5454d25e-cafa-4c8f-a4b0-4c77eff046cb
+		summarizeBy: sum
+		sourceColumn: Media_Tempo_Real
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Media_Tempo_Padrao
+		dataType: double
+		lineageTag: 759c987d-0396-4401-a4eb-047773134432
+		summarizeBy: sum
+		sourceColumn: Media_Tempo_Padrao
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Total_Retrabalhos
+		dataType: double
+		lineageTag: f4863c45-40bc-4ad4-b631-34a123171aa9
+		summarizeBy: sum
+		sourceColumn: Total_Retrabalhos
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Percentual_Retrabalho
+		dataType: double
+		lineageTag: 7ff93d0f-7872-41c3-a22c-c76a699cf769
+		summarizeBy: sum
+		sourceColumn: Percentual_Retrabalho
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Variacao_Media
+		dataType: double
+		lineageTag: 252a684b-6b2e-43c8-a224-5aa1c2c463b9
+		summarizeBy: sum
+		sourceColumn: Variacao_Media
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Nome_Setor
+		dataType: string
+		lineageTag: 048d7797-1976-4e71-8e39-ace0a806ac9e
+		summarizeBy: none
+		sourceColumn: Nome_Setor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Responsavel
+		dataType: string
+		lineageTag: 5a1d58d6-7b7f-44b4-97d1-4b0e28651ff1
+		summarizeBy: none
+		sourceColumn: Responsavel
+
+		annotation SummarizationSetBy = Automatic
+
+	column Capacidade_Diaria
+		dataType: int64
+		formatString: 0
+		lineageTag: d3d1e6b2-c9f5-4a2e-a72f-3068d43377c3
+		summarizeBy: sum
+		sourceColumn: Capacidade_Diaria
+
+		annotation SummarizationSetBy = Automatic
+
+	column Indice_Eficiencia
+		dataType: double
+		lineageTag: 51f84015-39d6-4176-a8b7-0997b82e5d1c
+		summarizeBy: sum
+		sourceColumn: Indice_Eficiencia
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition fProdutividadeSetor = m
+		mode: import
+		queryGroup: Fat
+		source = ```
+				// 2.2 Tabela de Medidas para Produtividade por Setor
+				let
+				    // Agrupar fluxo de processos por setor
+				    AgruparPorSetor = Table.Group(fFluxoProcesso, {"ID_Setor"}, {
+				        {"Total_Processos", each Table.RowCount(_), type number},
+				        {"Media_Tempo_Real", each List.Average([Tempo_Real]), type number},
+				        {"Media_Tempo_Padrao", each List.Average([Tempo_Padrao]), type number},
+				        {"Total_Retrabalhos", each List.Sum([Retrabalho]), type number},
+				        {"Percentual_Retrabalho", each List.Sum([Retrabalho]) / Table.RowCount(_) * 100, type number},
+				        {"Variacao_Media", each List.Average([Variacao_Percentual]), type number}
+				    }),
+				    
+				    // Juntar com tabela de setores para ter nomes dos setores
+				    JuntarComSetores = Table.NestedJoin(AgruparPorSetor, {"ID_Setor"}, dSetores, {"ID_Setor"}, "Detalhes_Setor", JoinKind.LeftOuter),
+				    ExpandirDetalhesSetor = Table.ExpandTableColumn(JuntarComSetores, "Detalhes_Setor", {"Nome_Setor", "Responsavel", "Capacidade_Diaria"}, {"Nome_Setor", "Responsavel", "Capacidade_Diaria"}),
+				    
+				    // Adicionar índices de eficiência
+				    AdicionarEficiencia = Table.AddColumn(ExpandirDetalhesSetor, "Indice_Eficiencia", each 
+				        if [Media_Tempo_Padrao] = 0 then 0 else [Media_Tempo_Padrao] / [Media_Tempo_Real] * 100),
+				    
+				    // Formatar números para melhor visualização
+				    FormatarNumeros = Table.TransformColumns(AdicionarEficiencia, {
+				        {"Media_Tempo_Real", each Number.Round(_, 2), type number},
+				        {"Media_Tempo_Padrao", each Number.Round(_, 2), type number},
+				        {"Percentual_Retrabalho", each Number.Round(_, 2), type number},
+				        {"Variacao_Media", each Number.Round(_, 2), type number},
+				        {"Indice_Eficiencia", each Number.Round(_, 2), type number}
+				    })
+				in
+				    FormatarNumeros
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

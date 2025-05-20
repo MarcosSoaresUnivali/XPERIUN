@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "DataChallenge_001"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "0aaed1db-17f2-4f43-a145-f1359c8649a1"
+  }
+}

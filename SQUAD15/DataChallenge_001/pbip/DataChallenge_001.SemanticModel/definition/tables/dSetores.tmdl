@@ -1,0 +1,77 @@
+table dSetores
+	lineageTag: 2e0a4839-d87f-4881-9d74-8c48ede63d07
+
+	column ID_Setor
+		dataType: int64
+		formatString: 0
+		lineageTag: 25577556-a6fd-4753-aa58-1f68ba68e672
+		summarizeBy: none
+		sourceColumn: ID_Setor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nome_Setor
+		dataType: string
+		lineageTag: a8c23241-26f7-4e9d-9782-3a7a30c7ff49
+		summarizeBy: none
+		sourceColumn: Nome_Setor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Responsavel
+		dataType: string
+		lineageTag: c4b9cb5e-4052-4d15-a29d-a972a17f8838
+		summarizeBy: none
+		sourceColumn: Responsavel
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tempo_Padrao_Processamento
+		dataType: int64
+		formatString: 0
+		lineageTag: 99176e33-0000-411e-a1b0-a6ba47fadf81
+		summarizeBy: none
+		sourceColumn: Tempo_Padrao_Processamento
+
+		annotation SummarizationSetBy = Automatic
+
+	column Capacidade_Diaria
+		dataType: int64
+		formatString: 0
+		lineageTag: c197ce5c-5e8c-465a-84f6-44137335a98d
+		summarizeBy: none
+		sourceColumn: Capacidade_Diaria
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dSetores = m
+		mode: import
+		queryGroup: Dim
+		source = ```
+				// 1.4 Importação da tabela SETORES
+				let
+				    Origem = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+				    tblSetores = if List.Contains(Origem[Name], "Setores") then 
+				                    Origem{[Item="Setores",Kind="Sheet"]}[Data]
+				                else if List.Contains(Origem[Name], "tblSetores") then
+				                    Origem{[Item="tblSetores",Kind="Table"]}[Data]
+				                else
+				                    Origem{[Item="Sheet4",Kind="Sheet"]}[Data],
+				    CabecalhosPromovidos = PadronizarTabela(tblSetores),
+				    TiposAlterados = Table.TransformColumnTypes(CabecalhosPromovidos,{
+				        {"ID_Setor", Int64.Type},
+				        {"Nome_Setor", type text},
+				        {"Responsavel", type text},
+				        {"Tempo_Padrao_Processamento", Int64.Type},
+				        {"Capacidade_Diaria", Int64.Type}
+				    }),
+				    // Remover duplicatas baseado na chave primária
+				    RemoverDuplicatas = Table.Distinct(TiposAlterados, {"ID_Setor"})
+				in
+				    RemoverDuplicatas
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

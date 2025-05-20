@@ -1,0 +1,81 @@
+table dClientes
+	lineageTag: 7afdbbc4-ce04-4a92-b6d0-589154fcf467
+
+	column ID_Cliente
+		dataType: int64
+		formatString: 0
+		lineageTag: a3f1f9bc-713c-4dde-9146-3f4756d97224
+		summarizeBy: none
+		sourceColumn: ID_Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nome_Cliente
+		dataType: string
+		lineageTag: 4718ba1e-f45b-4c6a-a608-9b88588268ef
+		summarizeBy: none
+		sourceColumn: Nome_Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segmento
+		dataType: string
+		lineageTag: f7f48665-c662-4392-85a8-27059918b9b6
+		summarizeBy: none
+		sourceColumn: Segmento
+
+		annotation SummarizationSetBy = Automatic
+
+	column Prioridade
+		dataType: int64
+		formatString: 0
+		lineageTag: 66d03074-d07e-4987-8f75-e760c041bce4
+		summarizeBy: sum
+		sourceColumn: Prioridade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Indice
+		dataType: double
+		lineageTag: 38dec49c-7c24-4820-a94a-f217ba90314d
+		summarizeBy: sum
+		sourceColumn: Indice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition dClientes = m
+		mode: import
+		queryGroup: Dim
+		source = ```
+				// 1.1 Importação da tabela CLIENTES
+				let
+				    Origem = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+				    tblClientes = if List.Contains(Origem[Name], "Clientes") then 
+				                      Origem{[Item="Clientes",Kind="Sheet"]}[Data]
+				                  else if List.Contains(Origem[Name], "tblClientes") then
+				                      Origem{[Item="tblClientes",Kind="Table"]}[Data]
+				                  else
+				                      Origem{[Item="Sheet1",Kind="Sheet"]}[Data],
+				    CabecalhosPromovidos = PadronizarTabela(tblClientes),
+				    TiposAlterados = Table.TransformColumnTypes(CabecalhosPromovidos,{
+				        {"ID_Cliente", Int64.Type},
+				        {"Nome_Cliente", type text},
+				        {"Segmento", type text},
+				        {"Prioridade", Int64.Type}
+				    }),
+				    // Remover linhas inválidas (ID_Cliente não pode ser nulo)
+				    LinhasValidas = Table.SelectRows(TiposAlterados, each [ID_Cliente] <> null and [ID_Cliente] <> ""),
+				    // Remover duplicatas baseado na chave primária
+				    RemoverDuplicatas = Table.Distinct(LinhasValidas, {"ID_Cliente"}),
+				    // Adicionar índice se necessário
+				    AdicionarIndice = Table.AddIndexColumn(RemoverDuplicatas, "Indice", 1, 1)
+				in
+				    AdicionarIndice
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

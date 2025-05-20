@@ -1,0 +1,223 @@
+table fPedidos
+	lineageTag: c699d5dd-01ec-4d93-8d5c-1dd1816fb13d
+
+	column ID_Pedido
+		dataType: string
+		lineageTag: 83d351f9-890e-41cc-9ec8-b92daaeb28a2
+		summarizeBy: none
+		sourceColumn: ID_Pedido
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Cliente
+		dataType: int64
+		formatString: 0
+		lineageTag: b3407fb7-8af7-400f-9b5f-6a6953cc7f78
+		summarizeBy: none
+		sourceColumn: ID_Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Entrada
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 18991a36-9ccf-4399-b0aa-f6389f6df20e
+		summarizeBy: none
+		sourceColumn: Data_Entrada
+
+		variation Variation
+			isDefault
+			relationship: 06175881-f3fc-4773-a6ac-ee5694fe1bc6
+			defaultHierarchy: LocalDateTable_e9a6cd29-0082-443d-b846-670bbc8614b5.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo_Pedido
+		dataType: string
+		lineageTag: f424055b-bcc3-42b8-b867-0be20064f637
+		summarizeBy: none
+		sourceColumn: Tipo_Pedido
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Material
+		dataType: int64
+		formatString: 0
+		lineageTag: da31f264-e096-4f08-bac6-791598b68038
+		summarizeBy: none
+		sourceColumn: ID_Material
+
+		annotation SummarizationSetBy = Automatic
+
+	column Peso_KG
+		dataType: double
+		lineageTag: 2681363e-c64b-4926-8dd5-710e68adbf16
+		summarizeBy: sum
+		sourceColumn: Peso_KG
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Complexidade_Peca
+		dataType: int64
+		formatString: 0
+		lineageTag: 272d0ffa-1bc9-4de7-b747-dd7349b8e774
+		summarizeBy: sum
+		sourceColumn: Complexidade_Peca
+
+		annotation SummarizationSetBy = Automatic
+
+	column Prioridade_Interna
+		dataType: int64
+		formatString: 0
+		lineageTag: 65177f8f-6238-485a-88c0-5f72e26c733b
+		summarizeBy: sum
+		sourceColumn: Prioridade_Interna
+
+		annotation SummarizationSetBy = Automatic
+
+	column SLA
+		dataType: string
+		lineageTag: 3a5a8098-354a-498b-afd0-407eb0ab50a7
+		summarizeBy: none
+		sourceColumn: SLA
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status_Atual
+		dataType: string
+		lineageTag: 2f3e5c23-a256-4b69-b929-00299b94bfe1
+		summarizeBy: none
+		sourceColumn: Status_Atual
+
+		annotation SummarizationSetBy = Automatic
+
+	column Prazo_Cliente
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3b121cbb-bf4a-4e53-bf14-e74d1c148c5e
+		summarizeBy: none
+		sourceColumn: Prazo_Cliente
+
+		variation Variation
+			isDefault
+			relationship: 32f3aa32-4be6-4d21-acf7-4b5b508b2129
+			defaultHierarchy: LocalDateTable_3a67b100-4e75-4963-8085-18e42123f72e.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Conclusao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 57ff7aaf-3c40-4189-83a9-41f6d319abf3
+		summarizeBy: none
+		sourceColumn: Data_Conclusao
+
+		variation Variation
+			isDefault
+			relationship: e5e13a74-1461-4ac9-b248-94e2918cc327
+			defaultHierarchy: LocalDateTable_9b834bdd-b690-423e-b96b-f30200fde2d6.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Valor_Final
+		dataType: int64
+		formatString: 0
+		lineageTag: 01fc32fc-69ed-4bc5-b17b-7b4257e9534a
+		summarizeBy: sum
+		sourceColumn: Valor_Final
+
+		annotation SummarizationSetBy = Automatic
+
+	column Lucro_Prejuizo
+		dataType: double
+		lineageTag: 4f014f1d-4c60-4f71-a312-ab6b020fb856
+		summarizeBy: sum
+		sourceColumn: Lucro_Prejuizo
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Status_Financeiro
+		dataType: string
+		lineageTag: caba46c7-c203-4ed3-88f8-a4da3853cca2
+		summarizeBy: none
+		sourceColumn: Status_Financeiro
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dias_Para_Entrega
+		dataType: int64
+		formatString: 0
+		lineageTag: f532a008-dcd1-480e-b0e3-f2ab2d171347
+		summarizeBy: sum
+		sourceColumn: Dias_Para_Entrega
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status_Prazo
+		dataType: string
+		lineageTag: 07de6059-7804-4e6b-93d8-a76462502681
+		summarizeBy: none
+		sourceColumn: Status_Prazo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fPedidos = m
+		mode: import
+		queryGroup: Fat
+		source = ```
+				// 1.2 Importação da tabela PEDIDOS 
+				let
+				    Origem = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+				    tblPedidos = if List.Contains(Origem[Name], "Pedidos") then 
+				                    Origem{[Item="Pedidos",Kind="Sheet"]}[Data]
+				                else if List.Contains(Origem[Name], "tblPedidos") then
+				                    Origem{[Item="tblPedidos",Kind="Table"]}[Data]
+				                else
+				                    Origem{[Item="Sheet2",Kind="Sheet"]}[Data],
+				    CabecalhosPromovidos = PadronizarTabela(tblPedidos),
+				    TiposAlterados = Table.TransformColumnTypes(CabecalhosPromovidos,{
+				        {"ID_Pedido", type text},
+				        {"ID_Cliente", Int64.Type},
+				        {"Data_Entrada", type datetime},
+				        {"Tipo_Pedido", type text},
+				        {"ID_Material", Int64.Type},
+				        {"Peso_KG", type number},
+				        {"Complexidade_Peca", Int64.Type},
+				        {"Prioridade_Interna", Int64.Type},
+				        {"SLA", type text},
+				        {"Status_Atual", type text},
+				        {"Prazo_Cliente", type datetime},
+				        {"Data_Conclusao", type datetime},
+				        {"Valor_Final", Int64.Type},
+				        {"Lucro_Prejuizo", type number},
+				        {"Status_Financeiro", type text}
+				    }),
+				    // Tratamento para datas inválidas
+				    TratarDatasNulas = Table.TransformColumns(TiposAlterados, {
+				        {"Data_Conclusao", each if _ = null then null else _}
+				    }),
+				    // Remover pedidos com ID inválido
+				    PedidosValidos = Table.SelectRows(TratarDatasNulas, each [ID_Pedido] <> null and [ID_Pedido] <> ""),
+				    // Criar medidas derivadas
+				    AdicionarMedidas = Table.AddColumn(PedidosValidos, "Dias_Para_Entrega", each 
+				        if [Prazo_Cliente] = null then null else Duration.Days([Prazo_Cliente] - DateTime.LocalNow())),
+				    AdicionarAtrasado = Table.AddColumn(AdicionarMedidas, "Status_Prazo", each 
+				        if [Data_Conclusao] = null then 
+				            if [Prazo_Cliente] < DateTime.LocalNow() then "Atrasado" else "No prazo"
+				        else
+				            if [Data_Conclusao] > [Prazo_Cliente] then "Concluído com atraso" else "Concluído no prazo"),
+				    // Remover duplicatas baseado na chave primária
+				    RemoverDuplicatas = Table.Distinct(AdicionarAtrasado, {"ID_Pedido"}),
+				    #"Changed Type" = Table.TransformColumnTypes(RemoverDuplicatas,{{"Dias_Para_Entrega", Int64.Type}, {"Status_Prazo", type text}, {"Data_Conclusao", type datetime}})
+				in
+				    #"Changed Type"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

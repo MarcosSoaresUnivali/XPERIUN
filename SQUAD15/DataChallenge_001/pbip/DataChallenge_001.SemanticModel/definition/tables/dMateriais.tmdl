@@ -1,0 +1,88 @@
+table dMateriais
+	lineageTag: f70e2f06-1fbc-4bb4-876c-ccc0e6962644
+
+	column ID_Material
+		dataType: int64
+		formatString: 0
+		lineageTag: 5aa42d7e-0c15-4c9e-8e89-a3783028c889
+		summarizeBy: none
+		sourceColumn: ID_Material
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo_Material
+		dataType: string
+		lineageTag: 7e2b3c10-a4b6-4edb-a259-a35c88648a5d
+		summarizeBy: none
+		sourceColumn: Tipo_Material
+
+		annotation SummarizationSetBy = Automatic
+
+	column Complexidade
+		dataType: int64
+		formatString: 0
+		lineageTag: a18f02e6-b199-4bc7-818d-17affc24054b
+		summarizeBy: none
+		sourceColumn: Complexidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tempo_Medio_Processamento
+		dataType: int64
+		formatString: 0
+		lineageTag: 25f73bef-b28e-4a80-afaf-cfb8f14f1883
+		summarizeBy: none
+		sourceColumn: Tempo_Medio_Processamento
+
+		annotation SummarizationSetBy = Automatic
+
+	column Custo_Base_KG
+		dataType: double
+		lineageTag: d77775c0-d1cf-4fda-a0a9-928510a555ef
+		summarizeBy: none
+		sourceColumn: Custo_Base_KG
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Disponibilidade
+		dataType: string
+		lineageTag: aaa4efcb-527a-43da-92d2-477722bf9efd
+		summarizeBy: none
+		sourceColumn: Disponibilidade
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dMateriais = m
+		mode: import
+		queryGroup: Dim
+		source = ```
+				// 1.5 Importação da tabela MATERIAIS
+				let
+				    Origem = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+				    tblMateriais = if List.Contains(Origem[Name], "Materiais") then 
+				                      Origem{[Item="Materiais",Kind="Sheet"]}[Data]
+				                  else if List.Contains(Origem[Name], "tblMateriais") then
+				                      Origem{[Item="tblMateriais",Kind="Table"]}[Data]
+				                  else
+				                      Origem{[Item="Sheet5",Kind="Sheet"]}[Data],
+				    CabecalhosPromovidos = PadronizarTabela(tblMateriais),
+				    TiposAlterados = Table.TransformColumnTypes(CabecalhosPromovidos,{
+				        {"ID_Material", Int64.Type},
+				        {"Tipo_Material", type text},
+				        {"Complexidade", Int64.Type},
+				        {"Tempo_Medio_Processamento", Int64.Type},
+				        {"Custo_Base_KG", type number},
+				        {"Disponibilidade", type text}
+				    }),
+				    // Remover duplicatas baseado na chave primária
+				    RemoverDuplicatas = Table.Distinct(TiposAlterados, {"ID_Material"})
+				in
+				    RemoverDuplicatas
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

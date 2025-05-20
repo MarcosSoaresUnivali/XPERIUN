@@ -1,0 +1,178 @@
+table fFluxoProcesso
+	lineageTag: dc41973c-1d4b-49f7-a6f8-f293283ae35a
+
+	column ID_Fluxo
+		dataType: string
+		lineageTag: 360d94c3-e39e-41f2-bd98-063a3fef5ea3
+		summarizeBy: none
+		sourceColumn: ID_Fluxo
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Pedido
+		dataType: string
+		lineageTag: 14ddc32f-0a24-4088-892b-478e017bc39f
+		summarizeBy: none
+		sourceColumn: ID_Pedido
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Setor
+		dataType: int64
+		formatString: 0
+		lineageTag: c359f0c4-cb6f-414d-ad34-b0b55a7dd373
+		summarizeBy: none
+		sourceColumn: ID_Setor
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Funcionario
+		dataType: int64
+		formatString: 0
+		lineageTag: 6bb4014f-f6b0-4818-82fa-836dcf8b9910
+		summarizeBy: none
+		sourceColumn: ID_Funcionario
+
+		annotation SummarizationSetBy = Automatic
+
+	column Turno
+		dataType: int64
+		formatString: 0
+		lineageTag: ea665bd5-70cd-45c8-aa5b-736b1648930c
+		summarizeBy: sum
+		sourceColumn: Turno
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Entrada_Setor
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: aeefabce-b930-4bca-829e-c99158345660
+		summarizeBy: none
+		sourceColumn: Data_Entrada_Setor
+
+		variation Variation
+			isDefault
+			relationship: dbe3327e-bf36-4c09-b4b2-d072aa69b465
+			defaultHierarchy: LocalDateTable_498940c6-71a3-4085-b379-cb0c8e565334.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Saida_Setor
+		dataType: string
+		lineageTag: 5be2c102-9895-4a42-8c32-e19cb3bbf7e8
+		summarizeBy: none
+		sourceColumn: Data_Saida_Setor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tempo_Padrao
+		dataType: int64
+		formatString: 0
+		lineageTag: 2d098f8b-12e3-42b7-a17a-2d2c0315c4a6
+		summarizeBy: sum
+		sourceColumn: Tempo_Padrao
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tempo_Real
+		dataType: int64
+		formatString: 0
+		lineageTag: 1df1939b-f071-4a6b-a9a7-61120d49652f
+		summarizeBy: sum
+		sourceColumn: Tempo_Real
+
+		annotation SummarizationSetBy = Automatic
+
+	column Retrabalho
+		dataType: int64
+		formatString: 0
+		lineageTag: 5307a460-9968-4bbb-84ab-dca9b66670ec
+		summarizeBy: sum
+		sourceColumn: Retrabalho
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ocorrencia_Eventual
+		dataType: string
+		lineageTag: f63e0157-2f37-4f97-bb2f-d94d76f3cbed
+		summarizeBy: none
+		sourceColumn: Ocorrencia_Eventual
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 806d193c-83e2-49f5-a52f-5cf85e80166f
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column Diferenca_Tempo
+		dataType: int64
+		formatString: 0
+		lineageTag: 9e1d1c3e-51a0-4705-9921-1d23678ff6ec
+		summarizeBy: sum
+		sourceColumn: Diferenca_Tempo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Variacao_Percentual
+		dataType: double
+		lineageTag: 8f1535c8-3270-46b7-808e-fc050b4917e1
+		summarizeBy: sum
+		sourceColumn: Variacao_Percentual
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition fFluxoProcesso = m
+		mode: import
+		queryGroup: Fat
+		source = ```
+				// 1.6 Importação da tabela FLUXO_PROCESSOS
+				let
+				    Origem = Excel.Workbook(File.Contents(PARAM_XLSX_FILE), null, true),
+				    tblFluxoProcessos = if List.Contains(Origem[Name], "Fluxo_Processo") then 
+				                           Origem{[Item="Fluxo_Processo",Kind="Sheet"]}[Data]
+				                       else if List.Contains(Origem[Name], "tblFluxoProcessos") then
+				                           Origem{[Item="tblFluxoProcessos",Kind="Table"]}[Data]
+				                       else
+				                           Origem{[Item="Sheet6",Kind="Sheet"]}[Data],
+				    CabecalhosPromovidos = PadronizarTabela(tblFluxoProcessos),
+				    TiposAlterados = Table.TransformColumnTypes(CabecalhosPromovidos,{
+				        {"ID_Fluxo", type text},
+				        {"ID_Pedido", type text},
+				        {"ID_Setor", Int64.Type},
+				        {"ID_Funcionario", Int64.Type},
+				        {"Turno", Int64.Type},
+				        {"Data_Entrada_Setor", type datetime},
+				        {"Data_Saida_Setor", type datetime},
+				        {"Tempo_Padrao", Int64.Type},
+				        {"Tempo_Real", Int64.Type},
+				        {"Retrabalho", Int64.Type},
+				        {"Ocorrencia_Eventual", type text},
+				        {"Status", type text}
+				    }),
+				    // Corrigir datas
+				    CorrigirDatas = Table.TransformColumns(TiposAlterados, {
+				        {"Data_Saida_Setor", each if _ = null then null else _}
+				    }),
+				    // Adicionar colunas calculadas
+				    AdicionarDiferenca = Table.AddColumn(CorrigirDatas, "Diferenca_Tempo", each 
+				        if [Tempo_Real] = null or [Tempo_Padrao] = null then null else [Tempo_Real] - [Tempo_Padrao]),
+				    AdicionarVariacao = Table.AddColumn(AdicionarDiferenca, "Variacao_Percentual", each 
+				        if [Tempo_Real] = null or [Tempo_Padrao] = null or [Tempo_Padrao] = 0 then null else ([Tempo_Real] - [Tempo_Padrao]) / [Tempo_Padrao] * 100),
+				    // Remover duplicatas baseado na chave primária
+				    RemoverDuplicatas = Table.Distinct(AdicionarVariacao, {"ID_Fluxo"}),
+				    #"Changed Type" = Table.TransformColumnTypes(RemoverDuplicatas,{{"Diferenca_Tempo", Int64.Type}, {"Variacao_Percentual", type number}})
+				in
+				    #"Changed Type"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

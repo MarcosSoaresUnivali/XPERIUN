@@ -1,0 +1,52 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup Param
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup Function
+
+	annotation PBI_QueryGroupOrder = 1
+
+queryGroup Dim
+
+	annotation PBI_QueryGroupOrder = 2
+
+queryGroup Fat
+
+	annotation PBI_QueryGroupOrder = 3
+
+annotation PBI_QueryOrder = ["Fluxo_Processo_","Funcionarios_","Materiais_","Pedidos_","Setores_","PARAM_XLSX_FILE","PadronizarTabela","dClientes","fPedidos","dFuncionarios","RemoverAcento","dSetores","dMateriais","fFluxoProcesso","dCalendario","fProdutividadeSetor","fLeadtime"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBIDesktopVersion = 2.143.878.0 (25.05)+b20aa3b866ec1b70879135a4e60e4b1301c75b21
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table dClientes
+ref table fPedidos
+ref table DateTableTemplate_7c6a64b1-4e1b-456d-b146-1d6e33d84b7b
+ref table LocalDateTable_e9a6cd29-0082-443d-b846-670bbc8614b5
+ref table LocalDateTable_3a67b100-4e75-4963-8085-18e42123f72e
+ref table LocalDateTable_9b834bdd-b690-423e-b96b-f30200fde2d6
+ref table dFuncionarios
+ref table dSetores
+ref table dMateriais
+ref table fFluxoProcesso
+ref table LocalDateTable_498940c6-71a3-4085-b379-cb0c8e565334
+ref table dCalendario
+ref table fProdutividadeSetor
+ref table fLeadtime
+ref table LocalDateTable_63228817-95a5-49fe-b5a7-9ad94c39f177
+ref table LocalDateTable_07c2b345-415e-488c-b318-105bc2f87baa
+ref table LocalDateTable_e160aedd-9af6-4e6e-b6cd-85f1415059ec
+
+ref cultureInfo en-US
+

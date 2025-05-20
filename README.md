@@ -150,13 +150,11 @@ Esta visualização permite que gestores tomem decisões baseadas em dados, não
 
 ![alt text](https://github.com/MarcosSoaresUnivali/XPERIUN/blob/main/SQUAD15/DataChallenge_001/img/dash2.png?raw=true)
 
-![alt text](https://github.com/MarcosSoaresUnivali/XPERIUN/blob/main/SQUAD15/DataChallenge_001/img/dash1.png?raw=true)
+![alt text](https://github.com/MarcosSoaresUnivali/XPERIUN/blob/main/SQUAD15/DataChallenge_001/img/dash_s1.png?raw=true)
 
-![alt text](https://github.com/MarcosSoaresUnivali/XPERIUN/blob/main/SQUAD15/DataChallenge_001/img/dashs1.png?raw=true)
+![alt text](https://github.com/MarcosSoaresUnivali/XPERIUN/blob/main/SQUAD15/DataChallenge_001/img/dash_r1.png?raw=true)
 
-![alt text](https://github.com/MarcosSoaresUnivali/XPERIUN/blob/main/SQUAD15/DataChallenge_001/img/dashr1.png?raw=true)
-
-![alt text](https://github.com/MarcosSoaresUnivali/XPERIUN/blob/main/SQUAD15/DataChallenge_001/img/dashr2.png?raw=true)
+![alt text](https://github.com/MarcosSoaresUnivali/XPERIUN/blob/main/SQUAD15/DataChallenge_001/img/dash_r2.png?raw=true)
 
 
 

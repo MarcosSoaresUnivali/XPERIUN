@@ -158,6 +158,7 @@ Esta visualização permite que gestores tomem decisões baseadas em dados, não
 
 
 
+
 # ====================================
 # Etapa 6: Estratégia de Apresentação
 # ====================================

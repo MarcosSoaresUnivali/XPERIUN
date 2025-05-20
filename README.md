@@ -71,7 +71,7 @@ Hipótese de material: Peças com materiais especiais têm tempo de processament
 
 Etapa 5: Análise de Dados + Dashboard
 
-![alt text](SQUAD15/DataChallenge_001/img/dash1.png?raw=true)
+![alt text](https://github.com/MarcosSoaresUnivali/XPERIUN/blob/main/SQUAD15/DataChallenge_001/img/dash1.png)?raw=true)
 
 
 

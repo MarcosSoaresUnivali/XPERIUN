@@ -69,16 +69,16 @@ Adaptem a narrativa para cada um. Mostrem o que cada um ganha com a mudança.
 
 
 
-# ========================================================
+# ====================================
 # Solução de Módulo Produtivo para a Xperiun Metalúrgica
-# ========================================================
+# ====================================
 
 Entendi perfeitamente o desafio. Vamos transformar o caos produtivo da Xperiun Metalúrgica em clareza estratégica através de uma solução de dados bem estruturada.
 
 
-# ========================================================
+# ====================================
 # Etapa 1: Escolha do problema principal
-# ========================================================
+# ====================================
 Após análise do cenário, o problema crítico que deve ser priorizado é:
 A falta de rastreabilidade e controle de tempo do fluxo produtivo, o que gera:
 
@@ -92,9 +92,9 @@ Este problema afeta diretamente os resultados financeiros, a satisfação do cli
 ![alt text](https://github.com/MarcosSoaresUnivali/XPERIUN/blob/main/SQUAD15/DataChallenge_001/doc/xp_model.png?raw=true)
 
 
-# ========================================================
+# ====================================
 # Etapa 2: Escolha de Métricas e KPIs
-# ========================================================
+# ====================================
 Para endereçar o problema principal, selecionei 6 KPIs estratégicos:
 
 * Lead Time Total - Tempo total desde a entrada do pedido até a entrega
@@ -106,9 +106,9 @@ Para endereçar o problema principal, selecionei 6 KPIs estratégicos:
 
 
 
-# ========================================================
+# ====================================
 # Etapa 3: Levantamento e tratamento de dados
-# ========================================================
+# ====================================
 Para implementar esta solução, precisamos:
 
 1. Criar pontos de coleta digital em cada setor da produção para substituir o controle em papel
@@ -119,9 +119,9 @@ Para implementar esta solução, precisamos:
 
 
 
-# ========================================================
+# ====================================
 # Etapa 4: Hipóteses
-# ========================================================
+# ====================================
 Com base no cenário descrito, formulei as seguintes hipóteses para investigação:
 
 1. Hipótese de complexidade: Pedidos com especificações técnicas complexas têm 30% mais atrasos que os padronizados
@@ -132,9 +132,9 @@ Com base no cenário descrito, formulei as seguintes hipóteses para investigaç
 
 
 
-# ========================================================
+# ====================================
 # Etapa 5: Análise de Dados + Dashboard
-# ========================================================
+# ====================================
 O dashboard abaixo apresenta uma visão clara dos principais KPIs e métricas para a gestão da produção da Xperiun Metalúrgica. Ele foi projetado para apresentar informações acionáveis que permitam identificar rapidamente:
 
 * O desempenho atual vs. planejado
@@ -160,9 +160,9 @@ Esta visualização permite que gestores tomem decisões baseadas em dados, não
 
 
 
-# ========================================================
+# ====================================
 # Etapa 6: Estratégia de Apresentação
-# ========================================================
+# ====================================
 
 ## Para a Diretoria:
 Mensagem-chave: "Transformação em resultados financeiros mensuráveis"

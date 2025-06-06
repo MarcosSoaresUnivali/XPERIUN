@@ -1,0 +1,28 @@
+mb  |   data:image/svg+xml;utf8,<SVG>
+
+
+Mode {
+  lighting-color: 🔆;
+  accent-color: 🌑;
+}
+
+BG {
+  lighting-color: #F7F7F7; 
+  accent-color: #0E4A8C;
+}
+
+Visual BG {
+  lighting-color: #F8F8F8;
+  accent-color: #746A66;
+}
+
+Text {
+  lighting-color: #252423;
+  accent-color: #FFFFFF;
+}
+
+Label {
+  lighting-color: #605E5C;
+  accent-color: #EFEFEF;
+}
+
